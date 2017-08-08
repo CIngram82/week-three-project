@@ -6,6 +6,12 @@ let buttonBody = '';
 let decUsed = false;
 let mathReady = false;
 let numbOfOpenP = 0;
+let arrayOfNumbs = [];
+let total = 0;
+let temp = 0;
+let startIndex = 0;
+let numBackToString = "";
+let mathString = "";
 
 buttonBody += `<button class="zero button clicker" id="numbButt0" type="button" name="zero">0</button>`
 buttonBody += `<button class="decimal button clicker" id="decimalButton" type="button" name="decimal">.</button>`
@@ -24,13 +30,11 @@ for (let i = 0; i < 10; i++) {
 // Add numbers to output area
 function addNumbers() {
   if (outputZone.textContent === "0") {
-    outputZone.textContent = "";
-    outputZone.textContent += this.textContent;
-    mathReady = true;
+    outputZone.textContent = this.textContent;
   } else {
     outputZone.textContent += this.textContent;
-    mathReady = true;
   }
+  mathReady = true;
 }
 
 // decimalButton
@@ -40,12 +44,11 @@ decimalButt.addEventListener('click', decAdded);
 function decAdded() {
   if (outputZone.textContent === "0" && decUsed === false) {
     outputZone.textContent = "0.";
-    decUsed = true;
   } else if (decUsed === false) {
     outputZone.textContent += ".";
-    decUsed = true;
     mathReady = true;
   }
+  decUsed = true;
 }
 
 // Clear the screen
@@ -60,32 +63,33 @@ function clearScreen() {
 
 // parenthesis stuff
 function openPStuff() {
-    if (outputZone.textContent === "0") {
-      outputZone.textContent =  this.textContent + " ";
-    } else if(outputZone.textContent.charAt(outputZone.length - 1) === " "){
-      if (outputZone.textContent.charAt(outputZone.length - 2) === ")") {
-        outputZone.textContent =  " * ";
-      }
-        outputZone.textContent =  this.textContent + " ";
-    }else if(mathReady === true){
-      outputZone.textContent += " * " + this.textContent + " ";
-    }else {
-      outputZone.textContent += " " + this.textContent + " ";
+  if (outputZone.textContent === "0") {
+    outputZone.textContent = this.textContent + " ";
+  } else if (outputZone.textContent.charAt(outputZone.length - 1) === " ") {
+    if (outputZone.textContent.charAt(outputZone.length - 2) === ")") {
+      outputZone.textContent = " * ";
     }
-    numbOfOpenP += 1;
-    mathReady = false;
-    decUsed = false;
+    outputZone.textContent = this.textContent + " ";
+  } else if (mathReady === true) {
+    outputZone.textContent += " * " + this.textContent + " ";
+  } else {
+    outputZone.textContent += this.textContent + " ";
   }
+  numbOfOpenP += 1;
+  mathReady = false;
+  decUsed = false;
+}
+
 function closePStuff() {
   if (numbOfOpenP > 0) {
     if (outputZone.textContent === "0") {
-      outputZone.textContent =  this.textContent + " ";
-    } else if(outputZone.textContent.charAt(outputZone.textContent.length - 1) === " "){
+      outputZone.textContent = this.textContent + " ";
+    } else if (outputZone.textContent.charAt(outputZone.textContent.length - 1) === " ") {
       if (mathReady === false) {
         return;
       }
-        outputZone.textContent +=  this.textContent + " ";
-    }else {
+      outputZone.textContent += this.textContent + " ";
+    } else {
       outputZone.textContent += " " + this.textContent + " ";
     }
     numbOfOpenP -= 1;
@@ -93,6 +97,8 @@ function closePStuff() {
     decUsed = false;
   }
 }
+
+
 // Math functions
 function mathStuff() {
   if (mathReady === true) {
@@ -110,6 +116,11 @@ let multiplyButt = document.getElementById('multiplyButton');
 multiplyButt.addEventListener('click', mathStuff);
 let divideButt = document.getElementById('divideButton');
 divideButt.addEventListener('click', mathStuff);
+let equalsButt = document.getElementById('equalsButton');
+equalsButt.addEventListener('click', setMathSting);
+equalsButt.addEventListener('click', equalsFun);
+equalsButt.addEventListener('click', outPutTotal);
+
 
 //Hard mode!
 let modButt = document.getElementById('modButton');
@@ -123,86 +134,102 @@ closePButt.addEventListener('click', closePStuff);
 let rootButt = document.getElementById('rootButton');
 rootButt.addEventListener('click', mathStuff);
 
-function parCheck(){
-  for (var i = 0; i < arrayOfNumbs.length; i++) {
-    if (arrayOfNumbs[i] === "(") {
-      openP = i;
-    }else if (arrayOfNumbs[i] === ")") {
-      closeP = i;
-      console.log(openP +" "+ closeP);
+function setMathSting() {
+  mathString = outputZone.textContent.split(" ");
+  histMath.textContent += outputZone.textContent;
+  if (numbOfOpenP > 0) {
+    for (var i = 0; i !== numbOfOpenP; ) {
+      mathString.push(")")
+      histMath.textContent += " )"
+              numbOfOpenP--;
     }
   }
 }
-function equalsFun() {
-  let arrayOfNumbs = [];
-  let total = 0;
-  let temp = 0;
-  arrayOfNumbs = outputZone.textContent.split(" ");
-  console.log(arrayOfNumbs);
-  histMath.textContent += outputZone.textContent;
-// ( and ) here
 
-//  ^ and √ math here
+function equalsFun() {
+  arrayOfNumbs = mathString;
+
   for (let i = 0; i < arrayOfNumbs.length; i++) {
+    if (arrayOfNumbs[i] === "" || arrayOfNumbs[i] === " ") {
+      arrayOfNumbs.splice(i, 0, );
+    }
+  }
+  let endIndex = arrayOfNumbs.length;
+  console.log(arrayOfNumbs);
+  // ( and ) here
+  function parCheck() {
+    for (let i = 0; i < arrayOfNumbs.length; i++) {
+      if (arrayOfNumbs[i] === "(") {
+        openP = i;
+      } else if (arrayOfNumbs[i] === ")") {
+        closeP = i;
+        console.log(openP + " " + closeP);
+        arrayOfNumbs.splice(closeP, 1);
+        arrayOfNumbs.splice(openP, 1);
+        startIndex = openP;
+        endIndex = closeP - 2;
+      } else {
+        startIndex = 0;
+        endIndex = arrayOfNumbs.length;
+      }
+    }
+  }
+  parCheck();
+  // slice and dice
+  function sliceAndDice() {
+    arrayOfNumbs.splice(i - 1, 3);
+    arrayOfNumbs.splice(i - 1, 0, total);
+    i -= 2;
+  }
+  //  ^ and √ math here
+  for (i = startIndex; i < endIndex; i++) {
     if (arrayOfNumbs[i] === "^") {
       total = Math.pow(parseFloat(arrayOfNumbs[i - 1]), parseFloat(arrayOfNumbs[i + 1]));
-      arrayOfNumbs.splice(i - 1, 3);
-      arrayOfNumbs.splice(i - 1, 0, total);
-      i -= 2;
+      sliceAndDice();
     } else if (arrayOfNumbs[i] === "√") {
       total = Math.pow(parseFloat(arrayOfNumbs[i + 1]), 1 / parseFloat(arrayOfNumbs[i - 1]))
-      arrayOfNumbs.splice(i - 1, 3);
-      arrayOfNumbs.splice(i - 1, 0, total);
-      i -= 2;
+      sliceAndDice();
     }
-    total = +total.toPrecision(8);
-    outputZone.textContent = total;
-    decUsed = false;
   }
-// * / and % math here
-  for (let i = 0; i < arrayOfNumbs.length; i++) {
+  // * / and % math here
+  for (i = startIndex; i < endIndex; i++) {
     if (arrayOfNumbs[i] === "*") {
       total = parseFloat(arrayOfNumbs[i - 1]) * parseFloat(arrayOfNumbs[i + 1]);
-      arrayOfNumbs.splice(i - 1, 3);
-      arrayOfNumbs.splice(i - 1, 0, total);
-      i -= 2;
+      sliceAndDice();
     } else if (arrayOfNumbs[i] === "/") {
       total = parseFloat(arrayOfNumbs[i - 1]) / parseFloat(arrayOfNumbs[i + 1]);
-      arrayOfNumbs.splice(i - 1, 3);
-      arrayOfNumbs.splice(i - 1, 0, total);
-      i -= 2;
+      sliceAndDice();
     } else if (arrayOfNumbs[i] === "%") {
       total = parseFloat(arrayOfNumbs[i - 1]) % parseFloat(arrayOfNumbs[i + 1]);
-      arrayOfNumbs.splice(i - 1, 3);
-      arrayOfNumbs.splice(i - 1, 0, total);
-      i -= 2;
+      sliceAndDice();
     }
-    total = +total.toPrecision(8);
-    outputZone.textContent = total;
-    decUsed = false;
   }
-// + and - math here
-  for (var i = 0; i < arrayOfNumbs.length; i++) {
+  // + and - math here
+  for (i = startIndex; i < endIndex; i++) {
     if (arrayOfNumbs[i] === "+") {
       total = parseFloat(arrayOfNumbs[i - 1]) + parseFloat(arrayOfNumbs[i + 1]);
-      arrayOfNumbs.splice(i - 1, 3);
-      arrayOfNumbs.splice(i - 1, 0, total);
-      i -= 2;
+      sliceAndDice();
     } else if (arrayOfNumbs[i] === "-") {
       total = parseFloat(arrayOfNumbs[i - 1]) - parseFloat(arrayOfNumbs[i + 1]);
-      arrayOfNumbs.splice(i - 1, 3);
-      arrayOfNumbs.splice(i - 1, 0, total);
-      i -= 2;
+      sliceAndDice();
     }
-    total = +total.toPrecision(8);
-    outputZone.textContent = total;
-    decUsed = false;
   }
-  histMath.textContent += " = " + total + "\n";
+  if (arrayOfNumbs.length > 2) {
+    numBackToString = arrayOfNumbs.toString();
+    numBackToString = numBackToString.replace(/,/g, " ");
+    outputZone.textContent = numBackToString;
+    startIndex = 0;
+    endIndex = arrayOfNumbs.length;
+    equalsFun();
+  }
 }
 
-let equalsButt = document.getElementById('equalsButton');
-equalsButt.addEventListener('click', equalsFun);
+function outPutTotal() {
+  total = +total.toPrecision(8);
+  histMath.textContent += " = " + total + "\n";
+  outputZone.textContent = total;
+  decUsed = false;
+}
 
 
 // TODO
