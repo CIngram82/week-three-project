@@ -8,7 +8,6 @@ let mathReady = false;
 let numbOfOpenP = 0;
 let arrayOfNumbs = [];
 let total = 0;
-let temp = 0;
 let startIndex = 0;
 let numBackToString = "";
 let mathString = "";
@@ -151,11 +150,10 @@ function equalsFun() {
 
   for (let i = 0; i < arrayOfNumbs.length; i++) {
     if (arrayOfNumbs[i] === "" || arrayOfNumbs[i] === " ") {
-      arrayOfNumbs.splice(i, 0, );
+      arrayOfNumbs.splice(i, 1);
     }
   }
   let endIndex = arrayOfNumbs.length;
-  console.log(arrayOfNumbs);
   // ( and ) here
   function parCheck() {
     for (let i = 0; i < arrayOfNumbs.length; i++) {
@@ -163,7 +161,6 @@ function equalsFun() {
         openP = i;
       } else if (arrayOfNumbs[i] === ")") {
         closeP = i;
-        console.log(openP + " " + closeP);
         arrayOfNumbs.splice(closeP, 1);
         arrayOfNumbs.splice(openP, 1);
         startIndex = openP;
@@ -180,6 +177,7 @@ function equalsFun() {
     arrayOfNumbs.splice(i - 1, 3);
     arrayOfNumbs.splice(i - 1, 0, total);
     i -= 2;
+    endIndex -= 2;
   }
   //  ^ and √ math here
   for (i = startIndex; i < endIndex; i++) {
@@ -230,11 +228,3 @@ function outPutTotal() {
   outputZone.textContent = total;
   decUsed = false;
 }
-
-
-// TODO
-// open and close par
-//  Look in book for idea on how to do this
-// fix the (3- <hit ( again will giv (3-*(  adding *( insted of just the (
-// if placed at top will run before math. look for ( ) and if none go down to run math anyway. if it finds ( ) look for the center and run math from (location to )location.
-//
